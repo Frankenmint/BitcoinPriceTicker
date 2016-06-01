@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+    <body>
+
+
+
+<script   src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
+<div id="tickerBox"></div>
+    <script>
+    var tickerBox = document.getElementById('tickerBox');
+
+    var divTicker = document.createElement('div');
+    divTicker.setAttribute("id", "ticker");
+    tickerBox.appendChild(divTicker);
+    divTicker.style.fontSize="4rem";
+    divTicker.style.fontWeight="bold";
+    divTicker.style.letterSpacing="2px";
+
+    var checked = document.createElement('div');
+    checked.setAttribute("id", "checked");
+    tickerBox.appendChild(checked);
+
+    var dataLast;
+
+    function priceData (){
+            var ticker = document.getElementById('ticker');
+            var lastUpdated = document.getElementById('checked');
+            var datetime = "Last Updated:" + new Date().toLocaleTimeString();
+            
+//https://api.coinmarketcap.com/v1/ticker/ethereum/
+//https://api.coinmarketcap.com/v1/ticker/the-dao/
+//for coinmarket cap uncomment the line below:
+
+    $.get(
+        "https://api.bitcoinaverage.com/ticker/global/USD/last",
+        function(data) {
+            
+        //bitcoinaverage returns a single value...coinmarket cap
+        //returns the entire JSON object...this reduces that object to USD
+
+
+        //data = data[0].price_usd;
+         if (data > dataLast) {
+            divTicker.style.color = "green";
+         } else {
+            divTicker.style.color = "red";
+         }
+         ticker.innerHTML = "$" + data.toFixed(2)+" <span id='super'>USD</span>";
+         superscript = document.getElementById('super');
+         superscript.style.fontSize="xx-small";
+         superscript.style.verticalAlign="top";
+         superscript.style.letterSpacing="0px";
+         checked.innerHTML = datetime;
+         dataLast = data;
+        }
+    );
+
+
+          $.getJSON("http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?",
+        {
+            tags: "bitcoin, honeybadger",
+            tagmode: "any",
+            format: "json"
+        },
+        function(data) {
+            var rnd = Math.floor(Math.random() * data.items.length);
+
+            var image_src = data.items[rnd]['media']['m'].replace("_m", "_b");
+
+            $('#tickerBox').css('background-image', "url('" + image_src + "')");
+
+        });
+
+
+    }
+    priceData();
+    setInterval(priceData, 5000);
+    checked.style.paddingLeft="10px";
+    checked.style.color="white";
+    checked.style.textShadow="2px 2px 1px black";
+    ticker.style.textShadow="1px 2px 2px black";
+    ticker.style.paddingLeft="10px";
+    tickerBox.style.backgroundSize="cover";
+    tickerBox.style.width="20rem";
+    tickerBox.style.height="8rem";
+    ticker.style.paddingTop="1rem";
+    ticker.style.paddingBottom=".5rem";    
+    tickerBox.style.borderRadius="5px";
+    tickerBox.style.backgroundPosition="40px 0px";
+    </script>
+
+    </body>
+</html>
