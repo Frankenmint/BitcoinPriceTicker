@@ -15,7 +15,7 @@ Here is the Ticker in Action:
 
 # Instructuions
 
-1. Copy the snippet into either an html page, a php template as an echo out, or even into wordpress as a `text/html` widget.
+1. Copy the snippet into either an html page (removing my body and html tags - you can save a copy of the page itself and run it standalone to see it in action, though you don't need the header/body/html tags if you are porting it to an existing website, just that empty ticker div and the javascript portion), a php template as an echo out, or even into wordpress as a `text/html` widget.
 
 
 2. Adjust the background images by filling in your own keywords as shown on line [61](https://github.com/Frankenmint/BitcoinPriceTicker/blob/master/priceTicker.html#L61) in the main file.  Currently it is set to `bitcoin` and `honeybadger` but as you see in the photo, it's only as good as the tags on publicly listed code.  (If you wanted, it would be trivial to create a loop of images to rotate in yourself and instead show those for each pass)
