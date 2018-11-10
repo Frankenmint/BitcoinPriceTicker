@@ -1,93 +1,145 @@
 <!doctype html>
 <html>
-    <body>
 
-
-
-<script   src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
-<div id="tickerBox"></div>
+<body>
+    <div id="tickerBox"></div>
     <script>
-    var tickerBox = document.getElementById('tickerBox');
+        function generateBG(){
+            var script = document.createElement("script");
+            script.src = "https://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=handleFlickr&tags=Mellivora+capensis&tagmode=any&format=json";
+            document.head.appendChild(script);
+        }
 
-    var divTicker = document.createElement('div');
-    divTicker.setAttribute("id", "ticker");
-    tickerBox.appendChild(divTicker);
-    divTicker.style.fontSize="4rem";
-    divTicker.style.fontWeight="bold";
-    divTicker.style.letterSpacing="2px";
+        function handleFlickr(data) {
+            // console.log(data);
+            var rnd = Math.floor(Math.random() * data.items.length);
+            var image_src = data.items[rnd]['media']['m'].replace("_m", "_b");
+            document.getElementById('tickerBox').style.backgroundImage = "url('" + image_src + "')";
+        }
+        var tickerBox = document.getElementById('tickerBox');
+        var divTicker = document.createElement('div');
 
-    var checked = document.createElement('div');
-    checked.setAttribute("id", "checked");
-    tickerBox.appendChild(checked);
+        divTicker.setAttribute("id", "ticker");
+        tickerBox.appendChild(divTicker);
+        divTicker.style.fontSize = "4rem";
+        divTicker.style.fontWeight = "bold";
+        divTicker.style.letterSpacing = "2px";
 
-    var dataLast;
+        var checked = document.createElement('div');
+        checked.setAttribute("id", "checked");
+        tickerBox.appendChild(checked);
+        var dataLast;
 
-    function priceData (){
+        function priceData() {
             var ticker = document.getElementById('ticker');
             var lastUpdated = document.getElementById('checked');
             var datetime = "Last Updated:" + new Date().toLocaleTimeString();
-            
-//https://api.coinmarketcap.com/v1/ticker/ethereum/
-//https://api.coinmarketcap.com/v1/ticker/the-dao/
-//for coinmarket cap uncomment the line below:
 
-    $.get(
-        "https://api.bitcoinaverage.com/ticker/global/USD/last",
-        function(data) {
-            
-        //bitcoinaverage returns a single value...coinmarket cap
-        //returns the entire JSON object...this reduces that object to USD
+            fetch("./price.json")
+                .then(response => response.json())
+                .then(result => {
+                    var data = result.price;
+                    // console.log(data);
+                    //data = data[0].price_usd;
+                    if (parseFloat(data) > parseFloat(dataLast)) {
+                        divTicker.style.color = "green";
+                    } else {
+                        divTicker.style.color = "red";
+                    }
+                    var formatted = parseFloat(data).toFixed(2);
+                    ticker.innerHTML = "$" + formatted.toString() + " <span id='super'>USD</span>";
+                    window.fitText(document.getElementById('ticker'));
+                    superscript = document.getElementById('super');
+                    superscript.style.fontSize = "xx-small";
+                    superscript.style.verticalAlign = "top";
+                    superscript.style.letterSpacing = "0px";
+                    checked.innerHTML = datetime;
+                    dataLast = data;
 
-
-        //data = data[0].price_usd;
-         if (data > dataLast) {
-            divTicker.style.color = "green";
-         } else {
-            divTicker.style.color = "red";
-         }
-         ticker.innerHTML = "$" + data.toFixed(2)+" <span id='super'>USD</span>";
-         superscript = document.getElementById('super');
-         superscript.style.fontSize="xx-small";
-         superscript.style.verticalAlign="top";
-         superscript.style.letterSpacing="0px";
-         checked.innerHTML = datetime;
-         dataLast = data;
-        }
-    );
+                });
+                generateBG();
 
 
-          $.getJSON("http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?",
-        {
-            tags: "bitcoin, honeybadger",
-            tagmode: "any",
-            format: "json"
-        },
-        function(data) {
-            var rnd = Math.floor(Math.random() * data.items.length);
-
-            var image_src = data.items[rnd]['media']['m'].replace("_m", "_b");
-
-            $('#tickerBox').css('background-image', "url('" + image_src + "')");
-
-        });
-
-
-    }
-    priceData();
-    setInterval(priceData, 5000);
-    checked.style.paddingLeft="10px";
-    checked.style.color="white";
-    checked.style.textShadow="2px 2px 1px black";
-    ticker.style.textShadow="1px 2px 2px black";
-    ticker.style.paddingLeft="10px";
-    tickerBox.style.backgroundSize="cover";
-    tickerBox.style.width="20rem";
-    tickerBox.style.height="8rem";
-    ticker.style.paddingTop="1rem";
-    ticker.style.paddingBottom=".5rem";    
-    tickerBox.style.borderRadius="5px";
-    tickerBox.style.backgroundPosition="40px 0px";
+        };
+        priceData();
+        setInterval(priceData, 10000);
+        checked.style.paddingLeft = "10px";
+        checked.style.color = "white";
+        checked.style.textShadow = "2px 2px 1px black";
+        ticker.style.textShadow = "1px 2px 2px black";
+        ticker.style.paddingLeft = "10px";
+        tickerBox.style.backgroundSize = "cover";
+        tickerBox.style.width = "20rem";
+        tickerBox.style.height = "8rem";
+        ticker.style.paddingTop = "1rem";
+        ticker.style.paddingBottom = ".5rem";
+        tickerBox.style.borderRadius = "5px";
+        // tickerBox.style.backgroundPosition="40px 0px";
     </script>
 
-    </body>
+    <script>
+        /*!	
+         * FitText.js 1.0 jQuery free version
+         *
+         * Copyright 2011, Dave Rupert http://daverupert.com 
+         * Released under the WTFPL license 
+         * http://sam.zoy.org/wtfpl/
+         * Modified by Slawomir Kolodziej http://slawekk.info
+         *
+         * Date: Tue Aug 09 2011 10:45:54 GMT+0200 (CEST)
+         */
+        (function() {
+
+            var addEvent = function(el, type, fn) {
+                if (el.addEventListener)
+                    el.addEventListener(type, fn, false);
+                else
+                    el.attachEvent('on' + type, fn);
+            };
+
+            var extend = function(obj, ext) {
+                for (var key in ext)
+                    if (ext.hasOwnProperty(key))
+                        obj[key] = ext[key];
+                return obj;
+            };
+
+            window.fitText = function(el, kompressor, options) {
+
+                var settings = extend({
+                    'minFontSize': -1 / 0,
+                    'maxFontSize': 1 / 0
+                }, options);
+
+                var fit = function(el) {
+                    var compressor = kompressor || 1;
+
+                    var resizer = function() {
+                        el.style.fontSize = Math.max(Math.min(el.clientWidth / (compressor * 10), parseFloat(settings.maxFontSize)), parseFloat(settings.minFontSize)) + 'px';
+                    };
+
+                    // Call once to set.
+                    resizer();
+
+                    // Bind events
+                    // If you have any js library which support Events, replace this part
+                    // and remove addEvent function (or use original jQuery version)
+                    addEvent(window, 'resize', resizer);
+                    addEvent(window, 'orientationchange', resizer);
+                };
+
+                if (el.length)
+                    for (var i = 0; i < el.length; i++)
+                        fit(el[i]);
+                else
+                    fit(el);
+
+                // return set of elements
+                return el;
+            };
+        })();
+    </script>
+
+</body>
+
 </html>
